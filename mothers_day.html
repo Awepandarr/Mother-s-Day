@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For My Mummy ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose:     #c9485b;
+    --blush:    #f7cdd5;
+    --cream:    #fdf6f0;
+    --gold:     #c9a96e;
+    --dark:     #2c1a1a;
+    --mid:      #7a4a50;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    color: var(--dark);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    overflow: hidden;
+  }
+
+  /* ── Background petals layer ── */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Grain overlay ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+
+  /* ── Scene wrapper ── */
+  #scene {
+    position: relative;
+    z-index: 2;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(201,168,110,0.3);
+    border-radius: 4px;
+    padding: 56px 60px 48px;
+    max-width: 660px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow:
+      0 2px 4px rgba(44,26,26,0.04),
+      0 20px 60px rgba(44,26,26,0.10),
+      0 60px 120px rgba(44,26,26,0.06);
+    animation: cardIn 1.2s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(40px) scale(0.97); }
+    to   { opacity:1; transform: translateY(0)   scale(1); }
+  }
+
+  /* corner flourishes */
+  .card::before, .card::after {
+    content: '✦';
+    position: absolute;
+    color: var(--gold);
+    font-size: 14px;
+    opacity: 0.6;
+  }
+  .card::before { top: 18px; left: 22px; }
+  .card::after  { bottom: 18px; right: 22px; }
+
+  /* ── Eyebrow / subtitle ── */
+  .eyebrow {
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+
+  /* ── Title ── */
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    line-height: 1.15;
+    color: var(--rose);
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s ease both;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* ── Thin divider ── */
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s ease both;
+  }
+
+  /* ── Message text ── */
+  #text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+    line-height: 1.85;
+    color: var(--mid);
+    min-height: 90px;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.1s ease both;
+  }
+
+  /* ── Progress ── */
+  #progress-wrap {
+    margin: 24px 0 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s ease both;
+  }
+
+  #progress-bar-track {
+    height: 2px;
+    background: var(--blush);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  #progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rose), var(--gold));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #progress-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* ── Button ── */
+  #btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 36px;
+    border: 1.5px solid var(--rose);
+    border-radius: 40px;
+    background: transparent;
+    color: var(--rose);
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.3s;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.3s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--rose);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    border-radius: inherit;
+    z-index: -1;
+  }
+
+  #btn:hover::before { transform: scaleX(1); }
+  #btn:hover { color: white; border-color: var(--rose); box-shadow: 0 8px 30px rgba(201,72,91,0.25); }
+  #btn:active { transform: scale(0.97); }
+
+  /* ── Final envelope section ── */
+  #final {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  #final.visible {
+    display: block;
+    opacity: 1;
+  }
+
+  .final-message {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(1.2rem, 3vw, 1.65rem);
+    line-height: 1.7;
+    color: var(--dark);
+    margin-bottom: 36px;
+  }
+
+  .final-message strong {
+    display: block;
+    font-weight: 400;
+    color: var(--rose);
+    font-size: 1.15em;
+    margin-bottom: 12px;
+  }
+
+  /* ── Envelope ── */
+  .envelope-wrap {
+    perspective: 800px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .envelope {
+    width: 220px;
+    height: 150px;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .env-body {
+    position: absolute;
+    inset: 0;
+    background: var(--rose);
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(201,72,91,0.35);
+  }
+
+  /* V-shaped flap using clip */
+  .env-flap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: #b53a4d;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-radius: 6px 6px 0 0;
+    transform-origin: top center;
+    transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
+    z-index: 3;
+  }
+
+  .env-side-l {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-bottom: 75px solid #e86070;
+    border-right: 110px solid transparent;
+    z-index: 1;
+  }
+
+  .env-side-r {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-bottom: 75px solid #d4505f;
+    border-left: 110px solid transparent;
+    z-index: 1;
+  }
+
+  .env-heart {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    z-index: 4;
+    transition: opacity 0.4s;
+  }
+
+  /* Letter rising from envelope */
+  .env-letter {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    width: 180px;
+    background: white;
+    border-radius: 4px;
+    padding: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.78rem;
+    color: var(--mid);
+    text-align: center;
+    line-height: 1.5;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.7s 0.6s ease, transform 0.7s 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .envelope-wrap.open .env-flap {
+    transform: rotateX(-180deg);
+  }
+
+  .envelope-wrap.open .env-heart {
+    opacity: 0;
+  }
+
+  .envelope-wrap.open .env-letter {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-160px);
+  }
+
+  .open-hint {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 16px;
+  }
+
+  /* ── Glow headline ── */
+  @keyframes gentleGlow {
+    from { text-shadow: 0 0 8px rgba(201,72,91,0.2); }
+    to   { text-shadow: 0 0 24px rgba(201,72,91,0.55), 0 0 40px rgba(201,72,91,0.2); }
+  }
+
+  .glow-text {
+    animation: gentleGlow 2.5s ease-in-out infinite alternate;
+  }
+
+  /* ── Shared ── */
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(18px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ── Floating petals (JS-driven) ── */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    animation: petalFall linear forwards;
+    opacity: 0.7;
+  }
+
+  @keyframes petalFall {
+    0%   { transform: translateY(-40px) rotate(0deg) translateX(0); opacity: 0.8; }
+    100% { transform: translateY(105vh) rotate(540deg) translateX(60px); opacity: 0; }
+  }
+
+  /* ── Confetti ── */
+  .confetti-piece {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 10;
+    animation: confettiFall linear forwards;
+    border-radius: 1px;
+  }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+  }
+
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="scene">
+  <div class="card">
+
+    <div class="eyebrow" id="eyebrow">A message from your daughter</div>
+
+    <h1 id="title">For My<br><em>Wonderful Mummy</em></h1>
+
+    <div class="divider"></div>
+
+    <p id="text">I made you something special.<br>Press the button and follow along.</p>
+
+    <div id="progress-wrap">
+      <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+      <div id="progress-label">Ready when you are</div>
+    </div>
+
+    <button id="btn" onclick="nextStep()">Begin ✦</button>
+
+    <!-- Final reveal -->
+    <div id="final">
+      <div class="final-message">
+        <strong class="glow-text">Happy Mother's Day, Mummy 🌸</strong>
+        In every life, in every world —<br>
+        I would always choose you.
+      </div>
+
+      <div class="envelope-wrap" id="envWrap" onclick="openEnvelope()">
+        <div class="envelope">
+          <div class="env-body"></div>
+          <div class="env-side-l"></div>
+          <div class="env-side-r"></div>
+          <div class="env-flap"></div>
+          <div class="env-heart">💌</div>
+          <div class="env-letter">
+            You are my home,<br>my safe place,<br>my greatest blessing.<br><br>
+            I love you forever. ❤️
+          </div>
+        </div>
+      </div>
+
+      <p class="open-hint">Tap the envelope to open</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── Story steps ───────────────────────────────────────────
+const steps = [
+  "Mummy, thank you for always being there for me — through every single moment of my life.",
+  "Through the good times and the difficult times, you never once left my side.",
+  "You protected me, supported me, and believed in me when I couldn't believe in myself.",
+  "Even when you get cross with me… I know it is because you love me and want the very best for me.",
+  "Your strength, your sacrifices, and your love mean more to me than words could ever explain.",
+  "If I could live my life all over again —",
+  "I would choose you as my Mummy every single time."
+];
+
+let step = 0;
+let typing = false;
+const TOTAL = steps.length;
+
+// ─── Audio ─────────────────────────────────────────────────
+const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_6c6c4f1c3b.mp3?filename=beautiful-piano-ambient-110624.mp3");
+audio.loop = true;
+audio.volume = 0.18;
+
+// ─── Typewriter ────────────────────────────────────────────
+function typeText(text, el) {
+  return new Promise(resolve => {
+    let i = 0;
+    el.innerHTML = "";
+    typing = true;
+    function tick() {
+      if (i < text.length) {
+        el.innerHTML += text.charAt(i++);
+        setTimeout(tick, 32);
+      } else {
+        typing = false;
+        resolve();
+      }
+    }
+    tick();
+  });
+}
+
+// ─── Next step ─────────────────────────────────────────────
+async function nextStep() {
+  if (typing) return;
+
+  audio.play().catch(() => {});
+
+  const textEl    = document.getElementById("text");
+  const btnEl     = document.getElementById("btn");
+  const fillEl    = document.getElementById("progress-bar-fill");
+  const labelEl   = document.getElementById("progress-label");
+  const titleEl   = document.getElementById("title");
+  const eyebrowEl = document.getElementById("eyebrow");
+
+  if (step === 0) {
+    titleEl.innerHTML = "For My<br><em>Wonderful Mummy</em>";
+    eyebrowEl.textContent = "A message from your daughter";
+    btnEl.textContent = "Next ✦";
+  }
+
+  if (step < TOTAL) {
+    spawnPetals(6);
+    await typeText(steps[step], textEl);
+
+    step++;
+    const pct = Math.round((step / TOTAL) * 100);
+    fillEl.style.width = pct + "%";
+    labelEl.textContent = step + " of " + TOTAL;
+
+    if (step === TOTAL) {
+      btnEl.textContent = "Open your gift ✦";
+    }
+  } else {
+    // Reveal final
+    btnEl.style.opacity = "0";
+    btnEl.style.pointerEvents = "none";
+    document.getElementById("progress-wrap").style.opacity = "0";
+    textEl.style.display = "none";
+
+    const fin = document.getElementById("final");
+    fin.style.display = "block";
+    requestAnimationFrame(() => fin.classList.add("visible"));
+
+    audio.volume = 0.35;
+  }
+}
+
+// ─── Envelope open ─────────────────────────────────────────
+function openEnvelope() {
+  const wrap = document.getElementById("envWrap");
+  if (wrap.classList.contains("open")) return;
+  wrap.classList.add("open");
+  document.querySelector(".open-hint").textContent = "❤️";
+  burstConfetti();
+  audio.volume = 0.55;
+}
+
+// ─── Floating petals (canvas-free, DOM) ────────────────────
+function spawnPetals(n) {
+  const emojis = ["🌸","🌺","🌷","✿","❀"];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("div");
+    p.className = "petal";
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left  = (Math.random() * 100) + "vw";
+    p.style.top   = "-40px";
+    p.style.fontSize = (14 + Math.random() * 16) + "px";
+    const dur = 5 + Math.random() * 4;
+    p.style.animationDuration = dur + "s";
+    p.style.animationDelay   = (Math.random() * 1.5) + "s";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + 2) * 1000);
+  }
+}
+
+// ─── Confetti burst ────────────────────────────────────────
+function burstConfetti() {
+  const colors = ["#c9485b","#c9a96e","#f7cdd5","#ff8fa3","#ffd700","#fff"];
+  for (let i = 0; i < 110; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti-piece";
+    c.style.left = (20 + Math.random() * 60) + "vw";
+    c.style.top  = (10 + Math.random() * 40) + "vh";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const dur = 3 + Math.random() * 2.5;
+    c.style.animationDuration = dur + "s";
+    c.style.animationDelay   = (Math.random() * 0.8) + "s";
+    c.style.borderRadius = Math.random() > 0.5 ? "50%" : "1px";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), (dur + 1) * 1000);
+  }
+}
+
+// ─── Subtle animated background (canvas) ───────────────────
+(function bgCanvas() {
+  const canvas = document.getElementById("bg-canvas");
+  const ctx    = canvas.getContext("2d");
+  const circles = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  // Soft orbs
+  for (let i = 0; i < 6; i++) {
+    circles.push({
+      x:  Math.random() * canvas.width,
+      y:  Math.random() * canvas.height,
+      r:  120 + Math.random() * 180,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: (Math.random() - 0.5) * 0.3,
+      hue: Math.random() > 0.5 ? 345 : 30,
+      alpha: 0.04 + Math.random() * 0.05
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background wash
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    grad.addColorStop(0,   "#fdf0f3");
+    grad.addColorStop(0.5, "#fdf6f0");
+    grad.addColorStop(1,   "#fdf0e8");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    circles.forEach(c => {
+      c.x += c.dx;
+      c.y += c.dy;
+      if (c.x < -c.r || c.x > canvas.width  + c.r) c.dx *= -1;
+      if (c.y < -c.r || c.y > canvas.height + c.r) c.dy *= -1;
+
+      const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+      g.addColorStop(0,   `hsla(${c.hue}, 70%, 75%, ${c.alpha})`);
+      g.addColorStop(1,   `hsla(${c.hue}, 70%, 75%, 0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
+// ─── Gentle ambient petals ──────────────────────────────────
+setInterval(() => spawnPetals(1), 2200);
+</script>
+
+</body>
+</html>
